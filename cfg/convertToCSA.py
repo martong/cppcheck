@@ -31,16 +31,22 @@ def transferType(ty):
     ty = list(filter(None, ty.split(' ')))
     res = ''
 
-    for subty in ty:
-        if subty != '*' and subty not in Builtin:
-            return 'Irrelevant'
+    # for subty in ty:
+        # if subty != '*' and subty not in Builtin:
+            # return 'Irrelevant'
+    # for subty in ty:
+        # if subty != '*' and subty not in Builtin:
+            # res += 'NB ' + ' '.join(ty) + 'NB'
+            # return res
 
     for subty in ty:
         if subty == '*':
             res += 'Ptr'
         elif subty == "size_t":
             res += 'Size'
-        elif subty in Builtin:
+        # elif subty in Builtin:
+            # res += subty.capitalize()
+        else:
             res += subty.capitalize()
     res += 'Ty'
     return res
@@ -90,7 +96,7 @@ for function in root.findall('function'):
             sign = re.sub(r'\w+\(', r'(', sign)
             # pointers
             sign = re.sub(r'(\S+)\*', r'\1 *', sign)
-            # sign = re.sub(r'\*(\w+)', r'* \1', sign)
+            sign = re.sub(r'\*(\w+)', r'* \1', sign)
             # print("// " + sign)
             # Get the return type.
             Ret = sign.split('(')[0]
@@ -107,7 +113,7 @@ for function in root.findall('function'):
         # print(mystdout.getvalue())
         # continue
 
-        print('addToFunctionSummaryMap("{}"\nSummary(ArgTypes{{{}}}, RetType{{{}}}, {})'.
+        print('addToFunctionSummaryMap("{}",\nSummary(ArgTypes{{{}}}, RetType{{{}}}, {})'.
               format(str(name), ','.join(Args), Ret, pureness))
 
         # print("addToFunctionSummaryMap(\"" + str(name) +
@@ -151,11 +157,11 @@ for function in root.findall('function'):
                     mstype = minsize.get('type')
                     if mstype == 'argvalue':
                         print(
-                            ".ArgConstraint(BufferSize({},{}))".format(
+                            ".ArgConstraint(BufferSize(/*Buffer=*/ArgNo({}), /*BufSize=*/ArgNo({})))".format(
                                 nr, decr(minsize.get('arg'))))
                     if mstype == 'mul':
                         print(
-                            ".ArgConstraint(BufferSize({},{},{}))".format(
+                            ".ArgConstraint(BufferSize(/*Buffer=*/ArgNo({}), /*BufSize=*/ArgNo({}), /*BufSizeMultiplier=*/ArgNo({})))".format(
                                 nr, decr(
                                     minsize.get('arg')), decr(
                                     minsize.get('arg2'))))
